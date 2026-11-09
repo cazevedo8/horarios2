@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Horários Escolar — APP_NOVO</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header>
+<div class="header-top">
+<h1><img src="icon.png" alt="ícone" class="header-icon"> Gerador de Horários Escolar</h1>
+<div class="header-toolbar">
+<button class="btn btn-outline" onclick="app.toggleDarkMode()" id="btn-dark-mode">🌙</button>
+<button class="btn btn-outline" onclick="app.exportarJSON()">Exportar/Backup JSON</button>
+<button class="btn btn-outline" onclick="document.getElementById('file-json').click()">Importar JSON</button>
+<button class="btn btn-outline" onclick="window.print()">🖨 Imprimir</button>
+<input type="file" id="file-json" accept=".json" style="display:none;" onchange="app.importarJSON(this)">
+<input type="file" id="file-import-disciplinas" accept=".xlsx,.xls" style="display:none;" onchange="app.processarArquivo('disciplinas', this)">
+<input type="file" id="file-import-cargas" accept=".xlsx,.xls" style="display:none;" onchange="app.processarArquivo('cargas', this)">
+<input type="file" id="file-import-professores" accept=".xlsx,.xls" style="display:none;" onchange="app.processarArquivo('professores', this)">
+</div>
+</div>
+</header>
+
+<nav class="tabs">
+<button class="tab-btn active" data-tab="matriz">Matriz</button>
+<button class="tab-btn" data-tab="disciplinas">Disciplinas</button>
+<button class="tab-btn" data-tab="cargas">Cargas</button>
+<button class="tab-btn" data-tab="turmas">Turmas</button>
+<button class="tab-btn" data-tab="professores">Professores</button>
+<button class="tab-btn" data-tab="prioridade">Prioridade</button>
+<button class="tab-btn" data-tab="geracao">Gerar Horários</button>
+<button class="tab-btn" data-tab="quadro">Quadro Geral</button>
+<button class="tab-btn" data-tab="cartoes">Cartões</button>
+</nav>
+
+<main>
+
+<!-- Exportar / Importar JSON (movido para o header) -->
+
+<!-- ABA: MATRIZ -->
+<section class="tab-panel active" id="panel-matriz">
+<h2>Matriz — Visão Geral</h2>
+<div class="toolbar">
+<button class="btn" onclick="app.abrirModalSerie()">+ Nova Série</button>
+<button class="btn btn-outline" onclick="app.limparLocalStorage()">Limpar todos os dados</button>
+<button class="btn btn-outline" onclick="app.gerarDadosTeste()">Dados de Teste</button>
+<button class="btn btn-outline" onclick="app.importarDisciplinas()">📥 Importar Disciplinas.xlsx</button>
+<button class="btn btn-outline" onclick="app.importarCargas()">📥 Importar Cargas.xlsx</button>
+<button class="btn btn-outline" onclick="app.importarProfessores()">📥 Importar Professores.xlsx</button>
+</div>
+<div class="card">
+<p>Séries: <span id="matriz-series">0</span> · Turmas: <span id="matriz-turmas">0</span> · Disciplinas: <span id="matriz-disciplinas">0</span> · Cargas: <span id="matriz-cargas">0</span> · Professores: <span id="matriz-professores">0</span> · Blocos: <span id="matriz-blocos">0</span></p>
+</div>
+<div id="lista-series" class="lista"></div>
+</section>
+
+<!-- ABA: DISCIPLINAS -->
+<section class="tab-panel" id="panel-disciplinas">
+<h2>Disciplinas</h2>
+<div class="toolbar">
+<button class="btn" onclick="app.abrirModalDisciplina()">+ Nova Disciplina</button>
+<button class="btn btn-outline" onclick="app.exportarDisciplinasXLSX()">📤 Exportar XLSX</button>
+</div>
+<input type="text" id="busca-disciplinas" placeholder="Buscar disciplina..." onkeyup="app.renderDisciplinas()"><br>
+<div id="lista-disciplinas" class="lista"></div>
+</section>
+
+<!-- ABA: CARGAS -->
+<section class="tab-panel" id="panel-cargas">
+<h2>Cargas (Série × Disciplina × Aulas/semana)</h2>
+<div class="toolbar">
+<button class="btn" onclick="app.abrirModalCarga()">+ Nova Carga</button>
+<button class="btn btn-outline" onclick="app.exportarCargasXLSX()">📤 Exportar XLSX</button>
+</div>
+<input type="text" id="busca-cargas" placeholder="Buscar carga..." onkeyup="app.renderCargas()"><br>
+<div id="lista-cargas" class="lista"></div>
+</section>
+
+<!-- ABA: PROFESSORES -->
+<section class="tab-panel" id="panel-professores">
+<h2>Professores</h2>
+<div class="toolbar">
+<button class="btn" onclick="app.abrirModalProfessor()">+ Novo Professor</button>
+<button class="btn btn-outline" onclick="app.exportarProfessoresXLSX()">📤 Exportar XLSX</button>
+</div>
+<input type="text" id="busca-professores" placeholder="Buscar professor..." onkeyup="app.renderProfessores()"><br>
+<div id="lista-professores" class="lista"></div>
+</section>
+
+<!-- ABA: PRIORIDADE -->
+<section class="tab-panel" id="panel-prioridade">
+<h2>Prioridade dos Professores</h2>
+<p>Arraste ou use os botões para definir a ordem de alocação. Professores no topo da lista têm prioridade maior na geração.</p>
+<div id="lista-prioridade" class="lista"></div>
+</section>
+
+<!-- ABA: TURMAS -->
+<section class="tab-panel" id="panel-turmas">
+<h2>Turmas</h2>
+<div class="toolbar">
+<button class="btn" onclick="app.abrirModalTurma()">+ Nova Turma</button>
+</div>
+<div id="lista-turmas" class="lista"></div>
+</section>
+
+<!-- ABA: BLOCOS (somente visualização — padrão da grade) -->
+<section class="tab-panel" id="panel-blocos">
+<h2>Blocos / Horários (Grade da Escola)</h2>
+<p class="card" style="background:#fff3cd;border-color:#ffc107;">Os blocos de horário são o padrão fixo da grade da escola e não podem ser criados ou editados aqui.</p>
+<div id="lista-blocos" class="lista"></div>
+</section>
+
+<!-- ABA: GERAÇÃO -->
+<section class="tab-panel" id="panel-geracao">
+<h2>Geração de Horários</h2>
+<div class="card">
+<p>O gerador processa as cargas na ordem de registro (linha 1 primeiro, depois 2, etc.).</p>
+<p>Respeita: pareamento de tempos, disponibilidade do professor, carga máxima, dia da semana por série, contra turno, sábado quinzenal (meia carga) e limite simultâneo de Educação Física.</p>
+<button class="btn btn-primary" onclick="app.gerarHorarios()">Gerar Horários</button>
+<div id="resultado-geracao" class="resultado" style="margin-top:1rem; display:none;"></div>
+</div>
+</section>
+
+<!-- ABA: QUADRO -->
+<section class="tab-panel" id="panel-quadro">
+<h2>Quadro Geral</h2>
+<div id="quadro" class="quadro"></div>
+</section>
+
+<!-- ABA: CARTÕES -->
+<section class="tab-panel" id="panel-cartoes">
+<h2>Cartões dos Professores</h2>
+<div id="cartoes" class="cartoes-grid"></div>
+</section>
+
+</main>
+
+<footer>
+<p>GHE - Gerador de Horario Escolar - versão <span id="versao-app">1.0</span></p>
+</footer>
+
+<div id="toast" class="toast">Operação desfeita</div>
+<div id="modal-overlay" class="modal-overlay" onclick="app.fecharModal()"></div>
+<div id="modal" class="modal"></div>
+
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/lib/sheetjs.full.min.js"></script>
+<script src="js/import.js"></script>
+<script src="js/ui.js"></script>
+<script>
+window.app = new App();
+window.importador = new Importador(window.app);
+</script>
+
+</body>
+</html>

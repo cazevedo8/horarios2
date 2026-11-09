@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Gerar XLSX de Exemplo</title>
+<script src="js/lib/sheetjs.full.min.js"></script>
+</head>
+<body>
+<h2>Gerar Arquivos XLSX de Exemplo</h2>
+<p>Clique nos botões abaixo para baixar cada planilha de exemplo.</p>
+
+<button onclick="gerarDisciplinas()">📥 Baixar disciplinas.xlsx</button>
+<button onclick="gerarCargas()">📥 Baixar cargas.xlsx</button>
+<button onclick="gerarProfessores()">📥 Baixar professores.xlsx</button>
+
+<script>
+function gerarDisciplinas() {
+  const dados = [
+    ['Nome'],
+    ['Português'],
+    ['Matemática'],
+    ['História'],
+    ['Geografia'],
+    ['Ciências'],
+    ['Artes'],
+    ['Desenho'],
+    ['Música'],
+    ['Ed. Física'],
+    ['Inglês'],
+    ['Francês'],
+    ['Espanhol'],
+    ['Biologia'],
+    ['Física'],
+    ['Química'],
+    ['Filosofia'],
+    ['Sociologia'],
+    ['Informática']
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(dados);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Disciplinas');
+
+  // Sheet de instruções
+  const instrucoes = [
+    ['INSTRUÇÕES - disciplinas.xlsx'],
+    [''],
+    ['Coluna Nome: Nome da disciplina. Exemplo: Matemática, Português, História.'],
+    [''],
+    ['Dicas:'],
+    ['- Use um nome por linha.'],
+    ['- Não deixe células vazias entre os nomes.'],
+    ['- O app impõe a ordem: importe Disciplinas primeiro, depois Cargas, depois Professores.']
+  ];
+  const wsInstr = XLSX.utils.aoa_to_sheet(instrucoes);
+  XLSX.utils.book_append_sheet(wb, wsInstr, 'Instruções');
+  XLSX.writeFile(wb, 'disciplinas.xlsx');
+}
+
+function gerarCargas() {
+  const dados = [
+    ['Série', 'Disciplina', 'Aulas/semana'],
+    ['6º ano', 'Matemática', '4'],
+    ['6º ano', 'Português', '3'],
+    ['6º ano', 'História', '2'],
+    ['7º ano', 'Matemática', '4'],
+    ['7º ano', 'Português', '3'],
+    ['7º ano', 'Geografia', '2'],
+    ['8º ano', 'Matemática', '4'],
+    ['8º ano', 'Física', '2'],
+    ['8º ano', 'Química', '2'],
+    ['9º ano', 'Matemática', '4'],
+    ['9º ano', 'Biologia', '2'],
+    ['9º ano', 'Filosofia', '2'],
+    ['1ª série', 'Matemática', '5'],
+    ['1ª série', 'Português', '4'],
+    ['1ª série', 'História', '3'],
+    ['2ª série', 'Matemática', '5'],
+    ['2ª série', 'Português', '4'],
+    ['2ª série', 'Sociologia', '3'],
+    ['3ª série', 'Matemática', '5'],
+    ['3ª série', 'Português', '4'],
+    ['3ª série', 'Informática', '3']
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(dados);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Cargas');
+
+  // Sheet de instruções
+  const instrucoes = [
+    ['INSTRUÇÕES - cargas.xlsx'],
+    [''],
+    ['Coluna Série: 6º ano, 7º ano, 8º ano, 9º ano, 1ª série, 2ª série, 3ª série.'],
+    ['Coluna Disciplina: Deve corresponder a um nome cadastrado em Disciplinas.'],
+    ['Coluna Aulas/semana: Número inteiro de 1 a 6.'],
+    [''],
+    ['Dicas:'],
+    ['- Importe Disciplinas antes de Cargas.'],
+    ['- Não deixe linhas vazias entre os dados.'],
+    ['- Cada linha = uma carga (uma turma da série terá essa disciplina com essa quantidade semanal).']
+  ];
+  const wsInstr = XLSX.utils.aoa_to_sheet(instrucoes);
+  XLSX.utils.book_append_sheet(wb, wsInstr, 'Instruções');
+  XLSX.writeFile(wb, 'cargas.xlsx');
+}
+
+function gerarProfessores() {
+  const dados = [
+    ['Nome', 'Disciplina', 'Série', 'Carga Máxima', 'Disponibilidade', 'Restrições'],
+    ['João Silva', 'Matemática', '6º ano', '20', 'segunda|manhã,terça|tarde', 'segunda|08:00|10:00'],
+    ['Maria Souza', 'Português', '6º ano', '18', 'quarta|manhã,quinta|tarde', ''],
+    ['Pedro Santos', 'História', '1ª série', '22', 'terça|manhã,sexta|tarde', 'sexta|14:00|16:00'],
+    ['Ana Costa', 'Geografia', '7º ano', '16', 'segunda|tarde,quarta|manhã', 'quarta|10:00|11:20'],
+    ['Carlos Lima', 'Física', '8º ano', '18', 'terça|tarde,quinta|manhã', ''],
+    ['Beatriz Rocha', 'Química', '8º ano', '16', 'segunda|manhã,sexta|tarde', 'sexta|13:00|15:00'],
+    ['Fernando Alves', 'Biologia', '9º ano', '20', 'terça|manhã,quinta|tarde', ''],
+    ['Luciana Mendes', 'Filosofia', '9º ano', '14', 'quarta|tarde,sexta|manhã', 'quarta|08:00|09:40'],
+    ['Ricardo Gomes', 'Sociologia', '2ª série', '16', 'segunda|tarde,quarta|manhã', ''],
+    ['Juliana Pereira', 'Informática', '3ª série', '20', 'terça|manhã,quinta|tarde', 'quinta|15:00|16:00']
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(dados);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Professores');
+
+  // Sheet de instruções
+  const instrucoes = [
+    ['INSTRUÇÕES - professores.xlsx'],
+    [''],
+    ['Coluna Nome: Nome do professor.'],
+    ['Coluna Disciplina: Deve corresponder a um nome cadastrado em Disciplinas.'],
+    ['Coluna Série: 6º ano, 7º ano, 8º ano, 9º ano, 1ª série, 2ª série, 3ª série.'],
+    ['Coluna Carga Máxima: Número inteiro de 1 a 6 (aulas por semana no máximo).'],
+    [''],
+    ['Coluna Disponibilidade (dia|turno):'],
+    ['  Dias: segunda, terça, quarta, quinta, sexta, sábado'],
+    ['  Turnos: manhã, tarde'],
+    ['  Formato: dia|turno, separados por vírgula para múltiplos.'],
+    ['  Exemplo: segunda|manhã,terça|tarde,quarta|manhã'],
+    [''],
+    ['Coluna Restrições (dia|início|fim):'],
+    ['  Dias: segunda, terça, quarta, quinta, sexta, sábado'],
+    ['  Início/Fim: horário no formato HH:MM (ex: 08:00, 10:40).'],
+    ['  Formato: dia|início|fim, separados por vírgula para múltiplos.'],
+    ['  Exemplo: segunda|08:00|10:00,sexta|14:00|16:00'],
+    ['  Deixe vazio se não houver restrição.'],
+    [''],
+    ['Dicas:'],
+    ['- Importe Disciplinas → Cargas → Professores (nesta ordem).'],
+    ['- O professor só será alocado em horários de sua disponibilidade.'],
+    ['- O professor nunca será alocado em horários de restrição.']
+  ];
+  const wsInstr = XLSX.utils.aoa_to_sheet(instrucoes);
+  XLSX.utils.book_append_sheet(wb, wsInstr, 'Instruções');
+  XLSX.writeFile(wb, 'professores.xlsx');
+}
+</script>
+</body>
+</html>
